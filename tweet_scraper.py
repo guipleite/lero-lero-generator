@@ -1,11 +1,11 @@
 import sys
 import pandas as pd
-from Scweet.scweet import scrap
+from Scweet.scweet import scrape
 
 
 def get_tweets(start_date, end_date, account=None, words=None):
     """
-    Return a pandas dataframe with tweets.
+    Returns a pandas dataframe with tweets.
 
     Keyword arguments:
     start_date -- oldest tweet date to search for, must be in YYYY-MM-DD format
@@ -15,20 +15,20 @@ def get_tweets(start_date, end_date, account=None, words=None):
     """
 
     print("Getting tweets ...")
-    if words.empty():
-        data = scrap(
-            start_date=start_date,
-            max_date=end_date,
+    if words is None:
+        data = scrape(
+            since=start_date,
+            until=end_date,
             from_account=account,
             interval=10,
             display_type="Top",
             save_images=False,
         )
     else:
-        data = scrap(
+        data = scrape(
             words=words,
-            start_date=start_date,
-            max_date=end_date,
+            since=start_date,
+            until=end_date,
             from_account=account,
             interval=1,
             headless=True,

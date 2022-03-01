@@ -12,6 +12,18 @@ SEQUENCE_PATH = "epochSequece"
 
 
 def gen_text(model, tokenizer, seq_len, seed_text, num_gen_words):
+    """
+    Generates new text based on the seed text received
+
+    Keyword arguments:
+    model -- trained model used to predict words
+    tokenizer -- trained tokenizer 
+    seq_len -- lenght of the seed text
+    seed_text -- inital text to generate predictions from
+    num_gen_words -- how many new words should be predicted
+    """
+
+
     output_text = []
     input_text = seed_text
 
@@ -31,10 +43,12 @@ def gen_text(model, tokenizer, seq_len, seed_text, num_gen_words):
 
 
 def main():
+    # Load Objects
     model = load_model(MODEL_PATH)
     tokenizer = load(open(TOKENIZER_PATH, "rb"))
     text_sequences = load(open(SEQUENCE_PATH, "rb"))
 
+    # Picks seed text randomly
     random.seed(os.urandom(1337))
     random_pick = random.randint(0, len(text_sequences))
 
@@ -42,8 +56,9 @@ def main():
     seed_text = " ".join(random_seed_text)
     print("Seed Text: ", seed_text)
 
+    # Generates new text
     gen_txt = gen_text(
         model, tokenizer, TRAIN_LEN, seed_text=seed_text, num_gen_words=31
     )
 
-    print(seed_text, "\n", gen_txt)
+    print("Generated Text: ", gen_txt)

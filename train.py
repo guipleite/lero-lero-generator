@@ -17,7 +17,8 @@ l_ats = [
     "\\r\\n@depeduardocunha",
     "@depeduardocunha\\r\\n",
     "\\r\\n@camaradeputados",
-]  # Removing common @s that cause a lot of bias in the final result
+] 
+
 START_DATE = "2015-01-01"
 END_DATE = "2020-12-30"
 ACCOUNT = "DepEduardoCunha"
@@ -31,6 +32,14 @@ SEQUENCE_PATH = "epochSequece"
 
 
 def tokenize(df, trash, l_ats):
+    """
+    Returns a tokenizer and a tokenizer list of the received tweets.
+
+    Keyword arguments:
+    df -- pandas dataframe with tweets
+    trash -- list with chars and symbols to remove from tweets
+    l_ats -- list for removing common @s that cause a lot of bias in the final result
+    """
     nlp = spacy.load("pt_core_news_lg", disable=["parser", "tagger", "ner"])
 
     doc_text = "".join(str(df["Text"].tolist()))
@@ -44,12 +53,13 @@ def tokenize(df, trash, l_ats):
     tokens = list(filter(lambda a: a not in l_ats, tokens))
     print("Number of tokens found: ", len(tokens))
 
-    # organize into sequences of tokens
+    # Organize into sequences of tokens
     text_sequences = [
         tokens[i - TRAIN_LEN + 1 : i] for i in range(TRAIN_LEN + 1, len(tokens))
     ]
     dump(text_sequences, open(TOKENIZER_PATH, "wb"))
 
+    # Tokenize
     tokenizer = Tokenizer()
     tokenizer.fit_on_texts(text_sequences)
     sequences = np.array(tokenizer.texts_to_sequences(text_sequences))
@@ -58,6 +68,13 @@ def tokenize(df, trash, l_ats):
 
 
 def train_model(tokenizer, sequences):
+    """
+    Declares and trains a LSTM model
+
+    Keyword arguments:
+    tokenizer -- tokenizer used to indicate how many words have been found on tweets
+    sequences -- tweet texts, used to train and validade the model
+    """
 
     vocab_sz = len(tokenizer.word_counts)
 
@@ -85,9 +102,12 @@ def train_model(tokenizer, sequences):
 
 def run():
 
-    df_tweets = get_tweets("DepEduardoCunha")
-    get_tweets(start_date, end_date, account=None, words=None)
+    df_tweets = get_tweets(START_DATE, END_DATE, account=ACCOUNT, words=None)
+    
+    print("Tokenizing data ...")
     tokenizer, sequences = tokenize(df_tweets, trash, l_ats)
+
+    print("Training model ...")
     model = train_model(tokenizer, sequences)
 
     # Saving the model and tokenizer
@@ -95,3 +115,6 @@ def run():
     dump(tokenizer, open(TOKENIZER_PATH, "wb"))
 
     return model
+
+if __name__ == "__main__":
+    run()
