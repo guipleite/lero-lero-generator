@@ -1,7 +1,7 @@
-import pandas as pd
 import os
 import random
-
+import pandas as pd
+import numpy as np
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # supress tensorflow console logging
 
 from keras.preprocessing.sequence import pad_sequences
@@ -37,7 +37,8 @@ def gen_text(model, tokenizer, seq_len, seed_text, num_gen_words):
         pad_encoded = pad_sequences([encoded_text], maxlen=seq_len, truncating="pre")
 
         # Predict Class Probabilities for each word
-        pred_word_ind = model.predict_classes(pad_encoded, verbose=0)[0]
+        pred_word_ind = np.argmax(model.predict(pad_encoded), axis=-1)[0]
+
         pred_word = tokenizer.index_word[pred_word_ind]
 
         # Update the sequence of input text (shifting one over with the new word)
@@ -58,7 +59,7 @@ def main():
 
     random_seed_text = text_sequences[random_pick]
     seed_text = " ".join(random_seed_text)
-    print("Seed Text: ", seed_text)
+    print("Seed Text: ", ''.join(seed_text))
 
     # Generates new text
     gen_txt = gen_text(

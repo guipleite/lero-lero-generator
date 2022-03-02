@@ -106,8 +106,8 @@ def train_model(tokenizer, sequences):
 
 def run():
 
-    # df_tweets = get_tweets(START_DATE, END_DATE, account=ACCOUNT, words=None)
-    df_tweets = pd.read_csv('./data/tweets.csv')
+    df_tweets = get_tweets(START_DATE, END_DATE, account=ACCOUNT, words=None)
+    # df_tweets = pd.read_csv('./data/tweets.csv')
 
     print("Tokenizing data ...")
     tokenizer, sequences = tokenize(df_tweets, trash, l_ats)
