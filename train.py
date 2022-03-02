@@ -12,11 +12,14 @@ from keras.utils import to_categorical
 from pickle import dump, load
 from tweet_scraper import get_tweets
 
-trash = '\n\n \n\n\n!"-#$%&()--.*+,-/:;<=>?@[\\]^_`{|}~\t\n\r\n~" '  # Stripping tweets
+trash = 'cunha depeduardocunha camaradeputados \n\n \n\n\n!"-#$%&()--.*+,-/:;<=>?@[\\]^_`{|}~\t\n\r\n~" '  # Stripping tweets
 l_ats = [
     "\\r\\n@depeduardocunha",
     "@depeduardocunha\\r\\n",
     "\\r\\n@camaradeputados",
+    "cunha\n@depeduardocunha\n·\n1",
+    'cunha\n@depeduardocunha\n·\n25',
+    "@depdanicunha\ndani"
 ] 
 
 START_DATE = "2015-01-01"
@@ -42,8 +45,7 @@ def tokenize(df, trash, l_ats):
     """
     nlp = spacy.load("pt_core_news_lg", disable=["parser", "tagger", "ner"])
 
-    doc_text = "".join(str(df["Text"].tolist()))
-
+    doc_text = "".join(str(df["Embedded_text"].tolist()))
     # Removing unwanted punctuation and symbols
     tokens = [
         re.sub(r"^https?:\/\/.*[\r\n]*", "", token.text.lower(), flags=re.MULTILINE)
@@ -52,12 +54,14 @@ def tokenize(df, trash, l_ats):
     ]
     tokens = list(filter(lambda a: a not in l_ats, tokens))
     print("Number of tokens found: ", len(tokens))
+    print(tokens)
 
     # Organize into sequences of tokens
     text_sequences = [
         tokens[i - TRAIN_LEN + 1 : i] for i in range(TRAIN_LEN + 1, len(tokens))
     ]
-    dump(text_sequences, open(TOKENIZER_PATH, "wb"))
+    
+    dump(text_sequences, open(SEQUENCE_PATH, "wb"))
 
     # Tokenize
     tokenizer = Tokenizer()
@@ -102,11 +106,12 @@ def train_model(tokenizer, sequences):
 
 def run():
 
-    df_tweets = get_tweets(START_DATE, END_DATE, account=ACCOUNT, words=None)
-    
+    # df_tweets = get_tweets(START_DATE, END_DATE, account=ACCOUNT, words=None)
+    df_tweets = pd.read_csv('./data/tweets.csv')
+
     print("Tokenizing data ...")
     tokenizer, sequences = tokenize(df_tweets, trash, l_ats)
-
+    
     print("Training model ...")
     model = train_model(tokenizer, sequences)
 

@@ -39,7 +39,7 @@ def get_tweets(start_date, end_date, account=None, words=None):
             proximity=True,
         )
     tweets_df = pd.DataFrame(data)
-
+    tweets_df.to_csv('./data/tweets.csv')
     return tweets_df
 
 

@@ -1,9 +1,14 @@
 import pandas as pd
 import os
 import random
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # supress tensorflow console logging
+
 from keras.preprocessing.sequence import pad_sequences
 from keras.models import load_model
+import tensorflow as tf
 from pickle import dump, load
+
 
 TRAIN_LEN = 25
 MODEL_PATH = "epochLSTM.h5"
@@ -17,12 +22,11 @@ def gen_text(model, tokenizer, seq_len, seed_text, num_gen_words):
 
     Keyword arguments:
     model -- trained model used to predict words
-    tokenizer -- trained tokenizer 
+    tokenizer -- trained tokenizer
     seq_len -- lenght of the seed text
     seed_text -- inital text to generate predictions from
     num_gen_words -- how many new words should be predicted
     """
-
 
     output_text = []
     input_text = seed_text
@@ -49,7 +53,7 @@ def main():
     text_sequences = load(open(SEQUENCE_PATH, "rb"))
 
     # Picks seed text randomly
-    random.seed(os.urandom(1337))
+    random.seed(os.urandom(3123131))
     random_pick = random.randint(0, len(text_sequences))
 
     random_seed_text = text_sequences[random_pick]
@@ -62,3 +66,7 @@ def main():
     )
 
     print("Generated Text: ", gen_txt)
+
+
+if __name__ == "__main__":
+    main()
